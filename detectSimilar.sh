@@ -6,7 +6,7 @@ command -v bc >/dev/null 2>&1 || { echo "This script requires 'bc'. Aborting." >
 bold=$(tput bold)
 normal=$(tput sgr0)
 
-definedThreshhold=0.2
+definedThreshold=0.2
 
 for i in $(ls -R |grep .jpg$); do
 	  for j in $(ls -R |grep .jpg$); do
@@ -17,14 +17,14 @@ for i in $(ls -R |grep .jpg$); do
 
             read width height < <(identify -format '%w %h' difference.jpeg)
             totalPixels=$((width * height))
-            acceptableThreshhold=$(echo "scale=0; ($definedThreshhold * $totalPixels)/1" | bc)
+            acceptableThreshold=$(echo "scale=0; ($definedThreshold * $totalPixels)/1" | bc)
 
             read white < <(convert difference.jpeg -format "%[fx:mean*w*h]" info:)
             white=$(echo "scale=0; $white/1" | bc)
 
             difference=$(echo "scale=2; ($white / $totalPixels)*100" | bc)
 
-            if (("$white" < "$acceptableThreshhold")) ;
+            if (("$white" < "$acceptableThreshold")) ;
             then
                 echo "${bold}removing $j -- too similar to $i${normal}"
                 mv $j delete-$j.jpeg
